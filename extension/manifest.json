@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "ELRC 宽屏助手",
+  "version": "2.5.2",
+  "description": "为上海科技大学课程回放提供更宽敞的布局和可选的水印隐藏。",
+  "permissions": [
+    "storage",
+    "clipboardWrite"
+  ],
+  "host_permissions": [
+    "https://elrc.shanghaitech.edu.cn/learn/videoreview/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://elrc.shanghaitech.edu.cn/learn/videoreview/*"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "action": {
+    "default_title": "ELRC 宽屏助手",
+    "default_popup": "popup.html"
+  }
+}
