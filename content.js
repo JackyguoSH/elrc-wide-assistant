@@ -10,14 +10,81 @@
     root.classList.toggle('elrc-hide-panels', current.panels);
     window.dispatchEvent(new Event('resize'));
   }
+  function setupResume() {
+    let currentKey=''; let generation=0; let lastSaved=0; let savedTime=0; let restoring=false;
+    const attached=new WeakSet();
+    const keyForPage=() => {
+      const url=new URL(location.href);
+      const fields=['id','week','weekDay','realSection'].map(k=>`${k}=${encodeURIComponent(url.searchParams.get(k)||'')}`).join('&');
+      return `resume:${url.pathname}?${fields}`;
+    };
+    function videos() { return [...document.querySelectorAll('.player_group .player_item video')]; }
+    function seekVideo(video) {
+      if (!restoring || !Number.isFinite(video.duration) || video.duration <= 0) return;
+      if (savedTime > 10 && savedTime < video.duration - 10) {
+        try { video.currentTime=savedTime; } catch (_) { /* Wait for the player to load. */ }
+      }
+    }
+    function bind() {
+      const key=keyForPage();
+      if (key!==currentKey) {
+        currentKey=key; const run=++generation; lastSaved=0; savedTime=0; restoring=true;
+        chrome.storage.local.get(key, data => {
+          if (run!==generation) return;
+          savedTime=Number(data[key]) || 0;
+          if (savedTime <= 10) restoring=false;
+          videos().forEach(seekVideo);
+          setTimeout(()=>{ if(run===generation){videos().forEach(seekVideo); restoring=false;} },10000);
+        });
+      }
+      for (const video of videos()) {
+        if (attached.has(video)) continue;
+        attached.add(video);
+        video.addEventListener('loadedmetadata',()=>seekVideo(video));
+        const save = (force=false) => {
+          if (restoring || !Number.isFinite(video.duration) || video.duration<=0) return;
+          const now=Date.now();
+          if (!force && (video.paused || now-lastSaved<10000)) return;
+          lastSaved=now;
+          const position=video.currentTime;
+          chrome.storage.local.set({[currentKey]: position < video.duration-10 ? position : 0});
+        };
+        video.addEventListener('timeupdate',()=>save());
+        video.addEventListener('pause',()=>save(true));
+        video.addEventListener('seeked',()=>save(true));
+        video.addEventListener('ended',()=>chrome.storage.local.set({[currentKey]:0}));
+      }
+    }
+    document.addEventListener('pointerdown', event=>{ if (event.isTrusted && event.target instanceof Element && event.target.closest('.multi_view_player_container')) restoring=false; }, true);
+    bind();
+    new MutationObserver(bind).observe(document.body,{childList:true,subtree:true});
+  }
   function installTranscriptHeader() {
     const panel=document.querySelector('.left_overview_container');
     if (!panel || panel.querySelector('.elrc-transcript-head')) return;
     const header=document.createElement('div'); header.className='elrc-transcript-head';
     const title=document.createElement('h2'); title.textContent='语音文本';
+    const controls=document.createElement('div'); controls.className='elrc-transcript-actions';
+    const original=document.createElement('button'); original.type='button'; original.className='elrc-copy'; original.textContent='原站工具';
+    original.addEventListener('click',()=>{const open=panel.classList.toggle('elrc-original-transcript'); original.textContent=open?'返回阅读':'原站工具';});
     const close=document.createElement('button'); close.type='button'; close.className='elrc-directory-close'; close.textContent='×'; close.setAttribute('aria-label','关闭语音文本');
     close.addEventListener('click',()=>document.documentElement.classList.remove('elrc-open-overview'));
-    header.append(title,close); panel.prepend(header);
+    controls.append(original,close); header.append(title,controls); panel.prepend(header);
+    const reader=document.createElement('div'); reader.className='elrc-transcript-reader';
+    const bar=document.createElement('div'); bar.className='elrc-transcript-bar';
+    const search=document.createElement('input'); search.type='search'; search.placeholder='搜索语音文本'; search.setAttribute('aria-label','搜索语音文本');
+    const count=document.createElement('span'); count.className='elrc-transcript-count'; count.setAttribute('role','status'); bar.append(search,count);
+    const list=document.createElement('div'); list.className='elrc-transcript-list';
+    const paragraphs=[...panel.querySelectorAll('.paragraph')];
+    for (const paragraph of paragraphs) {
+      const text=[...paragraph.querySelectorAll('span[slot="reference"]')].map(x=>x.textContent.trim()).filter(Boolean).join(' ');
+      if (!text) continue;
+      const article=document.createElement('article'); article.className='elrc-transcript-row';
+      const time=document.createElement('span'); time.className='elrc-transcript-time'; time.textContent=paragraph.querySelector('.point_in')?.textContent.trim()||'';
+      const body=document.createElement('p'); body.textContent=text; article.append(time,body); list.append(article);
+    }
+    function filter() { const q=search.value.trim().toLocaleLowerCase(); let shown=0; for(const row of list.children) { const visible=!q || row.textContent.toLocaleLowerCase().includes(q); row.hidden=!visible; if(visible) shown++; } count.textContent=q ? `${shown} 条结果` : ''; }
+    search.addEventListener('input',filter); reader.append(bar,list); panel.append(reader);
   }
   function buildSlides() {
     const panel = document.querySelector('.ppt_list_section_container');
@@ -125,6 +192,11 @@
     }
   }
   document.addEventListener('click', event => {
+    if (event.isTrusted && event.target instanceof Element) {
+      const ppt = event.target.closest('.tool_bar .pptList');
+      if (ppt) { event.preventDefault(); event.stopImmediatePropagation(); ppt.click(); return; }
+      if (event.target.matches('.multi_view_player_container .tool_bar')) { event.stopImmediatePropagation(); return; }
+    }
     const menu = event.target.closest('.header_box .menu_btn');
     const overview = event.target.closest('.header_box .overview_toggle_btn');
     const close = event.target.closest('.menu_drawer .el-icon-circle-close');
@@ -144,6 +216,11 @@
     if (english && english.classList.contains('active')) english.click();
   }
   function installButton() {
+    const page=document.querySelector('.review_student');
+    if (page) {
+      const rgb=getComputedStyle(page).backgroundColor.match(/\d+/g);
+      if (rgb && rgb.length >= 3) document.documentElement.classList.toggle('elrc-light', 0.2126*Number(rgb[0])+0.7152*Number(rgb[1])+0.0722*Number(rgb[2]) > 155);
+    }
     setDefaultSubtitle();
     buildSlides();
     if (document.documentElement.classList.contains('elrc-open-menu')) buildDirectory();
@@ -188,6 +265,6 @@
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'local' && Object.keys(defaults).some(key => key in changes)) chrome.storage.local.get(defaults, apply);
   });
-  const start = () => { installButton(); new MutationObserver(installButton).observe(document.body, { childList: true, subtree: true }); };
+  const start = () => { setupResume(); installButton(); new MutationObserver(installButton).observe(document.body, { childList: true, subtree: true }); };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true }); else start();
 })();

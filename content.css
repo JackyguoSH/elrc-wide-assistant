@@ -240,3 +240,89 @@ html.elrc-wide .voice_search_wrapper .el-switch__label { display:inline-flex !im
 /* Show the complete description instead of truncating it. */
 .elrc-timeline-desc { display:block; overflow:visible; -webkit-line-clamp:unset; white-space:normal; overflow-wrap:anywhere; }
 .elrc-timeline-row { height:auto; }
+/* Avoid snap-back at the beginning and keep the seek target stable on hover. */
+.elrc-timeline-list { scroll-snap-type:none !important; scroll-behavior:auto !important; }
+.elrc-timeline-row { scroll-snap-align:none !important; }
+/* Follow the surrounding page when it uses a light theme. */
+html.elrc-light.elrc-wide .ppt_list_section_container.elrc-slides-ready,
+html.elrc-light.elrc-wide .menu_drawer_body,
+html.elrc-light.elrc-wide.elrc-open-overview .left_overview_container,
+html.elrc-light.elrc-wide.elrc-open-companion .right_panel_container { background:#fff !important; border-color:#dce3ee !important; }
+html.elrc-light .elrc-slides, html.elrc-light .elrc-directory, html.elrc-light .elrc-transcript-head h2 { color:#1b293a !important; }
+html.elrc-light .elrc-slides-head, html.elrc-light .elrc-directory-head, html.elrc-light .elrc-transcript-head, html.elrc-light .elrc-week { border-color:#dce3ee !important; }
+html.elrc-light .elrc-timeline-time, html.elrc-light .elrc-timeline-desc, html.elrc-light .elrc-week-main span { color:#52647b !important; }
+html.elrc-light .elrc-timeline-tag { background:#e2efff; color:#285d9e; }
+html.elrc-light .elrc-timeline-dot { background:#4b88d5; box-shadow:0 0 0 4px #dfebfb; }
+html.elrc-light .elrc-timeline-dot::after { background:#c6d5e8; }
+html.elrc-light .elrc-directory-close { background:#edf2f8; color:#34485e; }
+html.elrc-light .elrc-week summary:hover, html.elrc-light .elrc-lesson:hover { background:#edf4fc; }
+html.elrc-light .elrc-lesson { background:#f5f8fc; border-color:#dce3ee; color:#1b293a; }
+html.elrc-light .elrc-lesson small { color:#60758f; }
+html.elrc-light .elrc-timeline-row:hover .elrc-timeline-content strong { color:#1761ac; }
+html.elrc-light .voice_text_list .paragraph { color:#24354a !important; border-color:#dce3ee !important; }
+html.elrc-light .voice_search_wrapper .el-input__inner { background:#f5f8fc !important; color:#24354a !important; border-color:#d1dce9 !important; }
+html.elrc-light .elrc-timeline-row, html.elrc-light .elrc-timeline-content strong { color:#1b293a !important; }
+/* Light theme: readable text across the extension's surfaces. */
+html.elrc-light .elrc-toolbar-label { color:#1b293a !important; }
+html.elrc-light .elrc-status { color:#485d76 !important; }
+html.elrc-light .elrc-directory h2, html.elrc-light .elrc-slides h2,
+html.elrc-light .elrc-week-main strong, html.elrc-light .elrc-lesson,
+html.elrc-light .elrc-timeline-content strong, html.elrc-light .elrc-transcript-head h2 { color:#1b293a !important; }
+html.elrc-light .elrc-directory-close { color:#33485e !important; }
+html.elrc-light .elrc-empty, html.elrc-light .elrc-arrow { color:#53677e !important; }
+html.elrc-light .voice_text_list .point_in span { color:#245d9e !important; }
+html.elrc-light .voice_search_wrapper .el-switch__label { color:#263b53 !important; }
+html.elrc-light .voice_text_list { color:#263b53 !important; }
+/* Light controls belong to the surrounding light page. */
+html.elrc-light.elrc-wide .elrc-copy,
+html.elrc-light.elrc-wide .header_box .menu_btn,
+html.elrc-light.elrc-wide .header_box .overview_toggle_btn { background:#edf4fd !important; color:#24496f !important; border-color:#cadbec !important; box-shadow:none !important; }
+html.elrc-light.elrc-wide .elrc-copy:hover,
+html.elrc-light.elrc-wide .header_box .menu_btn:hover,
+html.elrc-light.elrc-wide .header_box .overview_toggle_btn:hover { background:#dceafb !important; }
+html.elrc-light .voice_search_wrapper input::placeholder { color:#60758c !important; opacity:1 !important; }
+/* The catalogue grows naturally; the page provides the only vertical scroll. */
+html.elrc-wide.elrc-open-menu .menu_drawer { height:auto !important; overflow:visible !important; }
+html.elrc-wide.elrc-open-menu .menu_drawer_body { height:auto !important; overflow:visible !important; }
+.elrc-directory { height:auto; }
+.elrc-week-list { overflow:visible; }
+/* A selectable reading surface, with the original transcript tools available separately. */
+html.elrc-wide.elrc-open-overview .left_overview_container:not(.elrc-original-transcript) > .course_overview_panel { display:none !important; }
+.elrc-transcript-actions { display:flex; align-items:center; gap:12px; }
+.elrc-transcript-reader { display:flex; flex-direction:column; min-height:0; flex:1; padding:0 28px 20px; color:#e6edf8; }
+.elrc-original-transcript .elrc-transcript-reader { display:none; }
+.elrc-transcript-bar { display:flex; align-items:center; gap:16px; padding:16px 0; flex:none; }
+.elrc-transcript-bar input { width:min(340px,100%); height:40px; padding:0 12px; border:1px solid #43546b; border-radius:9px; background:#202c3a; color:#f3f7ff; font:14px -apple-system,BlinkMacSystemFont,sans-serif; }
+.elrc-transcript-count { color:#aebed1; font-size:12px; }
+.elrc-transcript-list { overflow:auto; min-height:0; border-top:1px solid #344151; }
+.elrc-transcript-row { display:grid; grid-template-columns:88px minmax(0,1fr); gap:24px; padding:16px 0; border-bottom:1px solid #344151; user-select:text !important; }
+.elrc-transcript-time { color:#9fc2ef; font-size:13px; font-variant-numeric:tabular-nums; padding-top:3px; }
+.elrc-transcript-row p { margin:0; line-height:1.85; font-size:14px; white-space:normal; overflow-wrap:anywhere; user-select:text !important; }
+.elrc-transcript-row[hidden] { display:none; }
+html.elrc-light .elrc-transcript-reader { color:#24354a; }
+html.elrc-light .elrc-transcript-list, html.elrc-light .elrc-transcript-row { border-color:#dce3ee; }
+html.elrc-light .elrc-transcript-time { color:#275f9f; }
+html.elrc-light .elrc-transcript-bar input { background:#f5f8fc; border-color:#d1dce9; color:#24354a; }
+html.elrc-light .elrc-transcript-count { color:#52647b; }
+@media(max-width:700px) { .elrc-transcript-reader { padding:0 20px 16px; } .elrc-transcript-row { grid-template-columns:1fr; gap:6px; } }
+/* Corner system: panels 16, nested cards/previews 12, controls 10, small tags 6. */
+html.elrc-wide { --elrc-radius-panel:16px; --elrc-radius-card:12px; --elrc-radius-control:10px; --elrc-radius-small:6px; }
+html.elrc-wide .player_box_container,
+html.elrc-wide .player_box,
+html.elrc-wide .ppt_list_section_container.elrc-slides-ready,
+html.elrc-wide.elrc-open-menu .menu_drawer,
+html.elrc-wide.elrc-open-menu .menu_drawer_body,
+html.elrc-wide.elrc-open-overview .left_overview_container,
+html.elrc-wide.elrc-open-companion .right_panel_container,
+html.elrc-wide .right_panel_shanghaiTech { border-radius:var(--elrc-radius-panel) !important; }
+html.elrc-wide .elrc-lesson, html.elrc-wide .knowledge_card,
+html.elrc-wide .elrc-timeline-row img, html.elrc-wide .elrc-slide,
+html.elrc-wide .left_menu_sufe .el-submenu__title,
+html.elrc-wide .multi_view_player_container .tool_bar .modal { border-radius:var(--elrc-radius-card) !important; }
+html.elrc-wide .elrc-copy, html.elrc-wide .header_box .menu_btn,
+html.elrc-wide .header_box .overview_toggle_btn, html.elrc-wide .elrc-week summary,
+html.elrc-wide .elrc-transcript-bar input,
+html.elrc-wide .voice_search_wrapper .el-input__inner { border-radius:var(--elrc-radius-control) !important; }
+html.elrc-wide .elrc-timeline-tag, html.elrc-wide .voice_text_list .point_in span { border-radius:var(--elrc-radius-small) !important; }
+/* Close buttons and timeline dots remain circular. */
+html.elrc-wide .elrc-directory-close, html.elrc-wide .elrc-timeline-dot { border-radius:50% !important; }
