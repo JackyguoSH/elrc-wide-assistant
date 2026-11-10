@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ELRC 宽屏助手",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "description": "为上海科技大学课程回放提供更宽敞的布局和可选的水印隐藏。",
   "permissions": [
     "storage",
