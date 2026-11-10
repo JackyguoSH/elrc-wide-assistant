@@ -91,7 +91,10 @@
     const source = panel?.querySelector('.courseware_screenshoot_panel_sufe .list');
     const cards = source?.querySelectorAll(':scope > .screenshot_card_wrapper');
     const notes = document.querySelectorAll('.knowledge_card_wrapper');
-    if (!panel || !source || !cards?.length || !notes.length || panel.querySelector('.elrc-slides')) return;
+    if (!panel || !source || (!cards?.length && !notes.length)) return;
+    const previous = panel.querySelector('.elrc-slides');
+    const signature = [cards.length, notes.length, ...[...cards, ...notes].map(card => card.textContent.trim() + (card.querySelector('img')?.getAttribute('src') || ''))].join('|');
+    if (previous?.dataset.signature === signature) return;
     const seconds = text => text.trim().split(':').reduce((n, part) => n * 60 + (Number(part) || 0), 0);
     const events = [];
     for (const card of cards) {
@@ -130,8 +133,10 @@
       row.addEventListener('click',()=> (event.kind==='课件' ? event.card.querySelector('.courseware_screenshoot_item') : event.card.querySelector('.knowledge_card'))?.click());
       list.append(row);
     }
-    shell.append(head,list); panel.append(shell); panel.classList.add('elrc-slides-ready');
-    if (getComputedStyle(panel).display !== 'none') panel.querySelector('.ppt_close_btn')?.click();
+    shell.append(head,list); shell.dataset.signature = signature;
+    if (previous) previous.replaceWith(shell); else panel.append(shell);
+    panel.classList.add('elrc-slides-ready');
+    if (!previous && getComputedStyle(panel).display !== 'none') panel.querySelector('.ppt_close_btn')?.click();
   }
   function buildDirectory() {
     const body = document.querySelector('.menu_drawer_body');
