@@ -138,47 +138,92 @@
     panel.classList.add('elrc-slides-ready');
     if (!previous && getComputedStyle(panel).display !== 'none') panel.querySelector('.ppt_close_btn')?.click();
   }
+  function isCurrentWeek(dateRange, today) {
+    const dates = [...dateRange.matchAll(/(\d{4})[.\/-](\d{1,2})[.\/-](\d{1,2})/g)]
+      .map(match => `${match[1]}-${match[2].padStart(2,'0')}-${match[3].padStart(2,'0')}`);
+    return dates.length === 2 && dates[0] <= today && today <= dates[1];
+  }
+  function lessonMatchesPage(week, name, params) {
+    const weekNumber = week.match(/\d+/)?.[0];
+    const day = name.match(/周[一二三四五六日天]/)?.[0];
+    const section = name.match(/第\s*(\d+(?:\s*-\s*\d+)?)\s*节/)?.[1]?.replace(/\s/g,'');
+    const normalize = value => (value || '').replace(/^(\d+)-\1$/, '$1');
+    return !!weekNumber && !!day && !!section && weekNumber === params.get('week') &&
+      day === params.get('weekDay') && normalize(section) === normalize(params.get('realSection'));
+  }
+  function renameDirectory() {
+    for (const element of document.querySelectorAll('.header_box .menu_btn, .menu_drawer .drawer_title')) {
+      for (const node of element.childNodes) {
+        if (node.nodeType === Node.TEXT_NODE && node.textContent.includes('目录')) {
+          node.textContent = node.textContent.replace('目录', '课次');
+        }
+      }
+    }
+  }
   function buildDirectory() {
     const body = document.querySelector('.menu_drawer_body');
     const source = body?.querySelector('.left_menu_sufe > .el-menu');
-    if (!body || !source || !source.querySelector(':scope > .el-submenu') || body.querySelector('.elrc-directory')) return;
+    const items = source ? [...source.querySelectorAll(':scope > .el-submenu')] : [];
+    if (!body || !items.length) return;
+    const today = new Intl.DateTimeFormat('en-CA', {timeZone:'Asia/Shanghai', year:'numeric', month:'2-digit', day:'2-digit'}).format(new Date());
+    const params = new URL(location.href).searchParams;
+    const previous = body.querySelector('.elrc-directory');
+    const signature = [location.href, today, ...items.map(item => item.textContent + ':' + [...item.querySelectorAll('.el-menu-item')].map(lesson=>lesson.className).join(','))].join('|');
+    if (previous?.dataset.signature === signature) return;
+    const openWeeks = new Map([...previous?.querySelectorAll('.elrc-week') || []].map(row => [row.dataset.week, row.open]));
     const wrap = document.createElement('section');
     wrap.className = 'elrc-directory';
-    wrap.innerHTML = '<div class="elrc-directory-head"><div><h2>课程目录</h2></div><button type="button" class="elrc-directory-close" aria-label="关闭目录">×</button></div><div class="elrc-week-list"></div>';
+    wrap.dataset.signature = signature;
+    wrap.innerHTML = '<div class="elrc-directory-head"><div><h2>课次</h2></div><button type="button" class="elrc-directory-close" aria-label="关闭课次">×</button></div><div class="elrc-week-list"></div>';
     wrap.querySelector('.elrc-directory-close').addEventListener('click', () => togglePanel('menu'));
     const list = wrap.querySelector('.elrc-week-list');
     const columns = [document.createElement('div'), document.createElement('div')];
     columns.forEach(column => { column.className='elrc-week-column'; list.append(column); });
     let weekIndex = 0;
-    for (const item of source.querySelectorAll(':scope > .el-submenu')) {
+    const badge = (text, className) => { const node=document.createElement('span'); node.className=className; node.textContent=text; return node; };
+    for (const item of items) {
       const title = item.querySelector(':scope > .el-submenu__title');
       if (!title) continue;
       const week = title.querySelector('.week')?.textContent.trim() || title.textContent.trim();
       const date = title.querySelector('.date')?.textContent.trim() || '';
+      const currentWeek = isCurrentWeek(date, today);
       const row = document.createElement('details');
-      row.className = 'elrc-week';
+      row.className = 'elrc-week'; row.dataset.week=week;
+      row.classList.toggle('elrc-current-week', currentWeek);
       const summary = document.createElement('summary');
       const main = document.createElement('span'); main.className = 'elrc-week-main';
       const num = document.createElement('strong'); num.textContent = week;
-      const dates = document.createElement('span'); dates.textContent = date;
+      const dates = document.createElement('span'); dates.className='elrc-week-dates'; dates.textContent = date;
       main.append(num, dates);
+      const trailing=document.createElement('span'); trailing.className='elrc-week-trailing';
+      if (currentWeek) trailing.append(badge('本周','elrc-week-badge'));
       const arrow = document.createElement('span'); arrow.className='elrc-arrow'; arrow.textContent='⌄';
-      summary.append(main, arrow); row.append(summary);
+      trailing.append(arrow); summary.append(main, trailing); row.append(summary);
       const links = document.createElement('div'); links.className = 'elrc-lessons';
       const lessons = item.querySelectorAll(':scope > .el-menu > .el-menu-item');
+      let playingWeek=false;
       for (const lesson of lessons) {
+        const name = lesson.querySelector('.section_name_section')?.textContent.trim();
+        if (!name) continue;
         const btn = document.createElement('button'); btn.type='button'; btn.className='elrc-lesson';
-        const name = lesson.querySelector('.section_name_section')?.textContent.trim() || lesson.textContent.trim();
         const day = lesson.querySelector('.section_name_date')?.textContent.trim() || '';
-        const n = document.createElement('span'); n.textContent=name;
+        const playing = params.has('week') && params.has('weekDay') && params.has('realSection')
+          ? lessonMatchesPage(week, name, params) : lesson.classList.contains('is-active');
+        const n = document.createElement('span'); n.className='elrc-lesson-name'; n.textContent=name;
         const d = document.createElement('small'); d.textContent=day;
-        const icon = document.createElement('span'); icon.className='elrc-play'; icon.textContent='▶';
-        btn.append(icon,n,d); btn.addEventListener('click', () => lesson.click()); links.append(btn);
+        const icon = document.createElement('span'); icon.className='elrc-play'; icon.textContent='▶'; icon.setAttribute('aria-hidden','true');
+        btn.append(icon,n,d);
+        if (playing) {
+          playingWeek=true; btn.classList.add('elrc-lesson-playing'); btn.setAttribute('aria-current','true');
+          btn.append(badge('正在播放','elrc-playing-badge'));
+        }
+        btn.addEventListener('click', () => lesson.click()); links.append(btn);
       }
-      if (!lessons.length) { const empty=document.createElement('span'); empty.className='elrc-empty'; empty.textContent='暂无课程'; links.append(empty); }
+      if (!links.children.length) { const empty=document.createElement('span'); empty.className='elrc-empty'; empty.textContent='暂无课程'; links.append(empty); }
+      row.open = openWeeks.has(week) ? openWeeks.get(week) : (playingWeek || currentWeek);
       row.append(links); columns[weekIndex++ % 2].append(row);
     }
-    body.append(wrap);
+    if (previous) previous.replaceWith(wrap); else body.append(wrap);
   }
   function togglePanel(name) {
     const root = document.documentElement;
@@ -220,12 +265,20 @@
     if (!source.classList.contains('active')) source.click();
     if (english && english.classList.contains('active')) english.click();
   }
+  function hideCourseReminders() {
+    // The site can append several reminders with the same ID.
+    for (const reminder of document.querySelectorAll('[id="course-summary-reminder"]')) {
+      reminder.style.setProperty('display', 'none', 'important');
+    }
+  }
   function installButton() {
+    hideCourseReminders();
     const page=document.querySelector('.review_student');
     if (page) {
       const rgb=getComputedStyle(page).backgroundColor.match(/\d+/g);
       if (rgb && rgb.length >= 3) document.documentElement.classList.toggle('elrc-light', 0.2126*Number(rgb[0])+0.7152*Number(rgb[1])+0.0722*Number(rgb[2]) > 155);
     }
+    renameDirectory();
     setDefaultSubtitle();
     buildSlides();
     if (document.documentElement.classList.contains('elrc-open-menu')) buildDirectory();
@@ -270,6 +323,7 @@
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'local' && Object.keys(defaults).some(key => key in changes)) chrome.storage.local.get(defaults, apply);
   });
+  setInterval(() => { if (document.documentElement.classList.contains('elrc-open-menu')) buildDirectory(); }, 60000);
   const start = () => { setupResume(); installButton(); new MutationObserver(installButton).observe(document.body, { childList: true, subtree: true }); };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true }); else start();
 })();

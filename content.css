@@ -326,3 +326,25 @@ html.elrc-wide .voice_search_wrapper .el-input__inner { border-radius:var(--elrc
 html.elrc-wide .elrc-timeline-tag, html.elrc-wide .voice_text_list .point_in span { border-radius:var(--elrc-radius-small) !important; }
 /* Close buttons and timeline dots remain circular. */
 html.elrc-wide .elrc-directory-close, html.elrc-wide .elrc-timeline-dot { border-radius:50% !important; }
+/* Lesson navigation: calendar week and the selected recording are separate states. */
+.elrc-week summary { gap:16px; }
+.elrc-week-main { flex:1; flex-wrap:wrap; gap:4px 12px; align-items:center; }
+.elrc-week-main .elrc-week-dates { white-space:normal; overflow:visible; font-variant-numeric:tabular-nums; }
+.elrc-week-trailing { display:flex; align-items:center; gap:12px; flex:none; }
+.elrc-week-badge, .elrc-playing-badge { display:inline-flex; align-items:center; justify-content:center; white-space:nowrap; font-size:11px; line-height:20px; padding:0 7px; border-radius:var(--elrc-radius-small,6px); font-weight:600; }
+.elrc-current-week > summary { background:#233c54; box-shadow:inset 3px 0 #8dbdff; }
+.elrc-week-badge { background:#304f6f; color:#cde4ff; }
+.elrc-lessons { grid-template-columns:minmax(0,1fr); padding:12px 0 16px; }
+.elrc-lesson { display:grid; grid-template-columns:14px minmax(0,1fr) auto auto; padding:12px; min-width:0; gap:10px; }
+.elrc-lesson-name { min-width:0; white-space:normal; overflow-wrap:anywhere; line-height:1.5; }
+.elrc-lesson small { white-space:nowrap; }
+.elrc-lesson-playing { border-color:#8dbdff; background:#233c54; box-shadow:none; }
+.elrc-playing-badge { background:#304f6f; color:#cde4ff; }
+html.elrc-light .elrc-current-week > summary { background:#edf4fc; box-shadow:inset 3px 0 #007aff; }
+html.elrc-light .elrc-week-badge, html.elrc-light .elrc-playing-badge { background:#dcecff; color:#155da8; }
+html.elrc-light .elrc-lesson-playing { border-color:#78ade8 !important; background:#edf4fc !important; box-shadow:none; }
+@media(max-width:420px) { .elrc-lesson { grid-template-columns:14px minmax(0,1fr) auto; } .elrc-playing-badge { grid-column:2 / -1; justify-self:start; } }
+html.elrc-wide .menu_drawer_body > .drawer_title { display:none !important; }
+
+/* Suppress recurring learning-summary pushes on video review pages. */
+[id="course-summary-reminder"] { display:none !important; }
