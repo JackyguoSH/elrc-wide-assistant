@@ -94,9 +94,36 @@ html.elrc-wide .overview_title_bar, html.elrc-wide .panel_header_bar { padding:1
 html.elrc-wide .right_panel_shanghaiTech { border-radius:16px !important; }
 /* Retain the site's functional player controls while giving their chrome a consistent treatment. */
 html.elrc-wide .multi_view_player_container .tool_bar { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif !important; }
-html.elrc-wide .multi_view_player_container .tool_bar .modal { border:1px solid rgba(200,215,235,.18) !important; border-radius:12px !important; background:rgba(30,39,52,.96) !important; box-shadow:0 12px 28px rgba(0,0,0,.3) !important; overflow:hidden; }
+.multi_view_player_container .tool_bar {
+  --elrc-menu-background:#202c3a;
+  --elrc-menu-text:#ecf3fd;
+  --elrc-menu-border:#43546b;
+  --elrc-menu-control:#253247;
+  --elrc-menu-hover:#344b64;
+  --elrc-menu-scheme:dark;
+}
+html.elrc-light .multi_view_player_container .tool_bar {
+  --elrc-menu-background:#fff;
+  --elrc-menu-text:#24354a;
+  --elrc-menu-border:#d1dce9;
+  --elrc-menu-control:#f5f8fc;
+  --elrc-menu-hover:#edf4fc;
+  --elrc-menu-scheme:light;
+}
+html.elrc-wide .multi_view_player_container .tool_bar .modal {
+  border:1px solid var(--elrc-menu-border) !important;
+  border-radius:12px !important;
+  background:var(--elrc-menu-background) !important;
+  color:var(--elrc-menu-text) !important;
+  color-scheme:var(--elrc-menu-scheme);
+  box-shadow:0 12px 28px #0003 !important;
+  overflow:hidden;
+}
 html.elrc-wide .multi_view_player_container .tool_bar .modal p { border-radius:7px; }
-html.elrc-wide .multi_view_player_container .tool_bar .modal p:hover { background:rgba(128,166,210,.2) !important; }
+html.elrc-wide .multi_view_player_container .tool_bar .modal label,
+html.elrc-wide .multi_view_player_container .tool_bar .modal p { color:var(--elrc-menu-text) !important; }
+html.elrc-wide .multi_view_player_container .tool_bar .modal p:hover,
+html.elrc-wide .multi_view_player_container .tool_bar .modal p.active { background:var(--elrc-menu-hover) !important; }
 /* Compact catalogue: one clear row per week and per recording. */
 html.elrc-wide .menu_drawer_body { padding:16px 20px !important; }
 html.elrc-wide .left_menu_sufe > .el-menu { padding-top:42px !important; }
@@ -348,3 +375,154 @@ html.elrc-wide .menu_drawer_body > .drawer_title { display:none !important; }
 
 /* Suppress recurring learning-summary pushes on video review pages. */
 [id="course-summary-reminder"] { display:none !important; }
+
+/* Toolbar menus overlay the page without changing the content grid. */
+.elrc-popover-control { position:relative; flex:none; }
+.elrc-popover { position:absolute; z-index:1000; right:0; top:calc(100% + 8px); width:min(320px,calc(100vw - 48px)); box-sizing:border-box; padding:8px; border:1px solid #43546b; border-radius:var(--elrc-radius-panel,16px); background:#202c3a; color:#ecf3fd; box-shadow:0 12px 36px #0005; font:13px/1.5 -apple-system,BlinkMacSystemFont,sans-serif; }
+.elrc-popover[hidden], .elrc-focus-fields[hidden], .elrc-focus-swap[hidden], .elrc-focus-status[hidden] { display:none !important; }
+.elrc-download-list { display:grid; grid-template-columns:minmax(0,1fr); gap:2px; }
+.elrc-download-camera { display:flex; align-items:center; justify-content:space-between; gap:16px; min-width:0; padding:10px; border-radius:var(--elrc-radius-control,10px); }
+.elrc-download-camera strong { font-size:13px; font-weight:500; line-height:1.5; overflow-wrap:anywhere; }
+.elrc-download-link { display:inline-flex; align-items:center; justify-content:center; flex:none; text-decoration:none !important; padding:7px 10px; }
+.elrc-download-unavailable, .elrc-download-empty, .elrc-focus-status { font-size:12px; color:#aebed1; line-height:1.5; }
+.elrc-download-empty, .elrc-focus-status { margin:8px; }
+.elrc-mode-choices { display:grid; grid-template-columns:1fr 1fr; gap:4px; padding:4px; border-radius:10px; background:#152130; }
+.elrc-mode-choices button { border:0; border-radius:7px; padding:8px; background:transparent; color:#bac9dc; font:500 13px -apple-system,BlinkMacSystemFont,sans-serif; cursor:pointer; }
+.elrc-mode-choices button[aria-pressed="true"] { background:#344b64; color:#fff; box-shadow:0 1px 3px #0003; }
+.elrc-mode-choices button:disabled { opacity:.5; cursor:default; }
+.elrc-focus-fields { display:grid; gap:12px; padding:16px 8px 12px; }
+.elrc-focus-fields label { display:grid; grid-template-columns:52px minmax(0,1fr); align-items:center; gap:12px; }
+.elrc-focus-fields select { box-sizing:border-box; min-width:0; width:100%; padding:7px 8px; border:1px solid #43546b; border-radius:8px; background:#253247; color:inherit; font:inherit; color-scheme:dark; }
+.elrc-focus-swap { display:block; width:calc(100% - 16px); margin:0 8px 8px; padding:8px; border:1px solid #43546b; border-radius:8px; background:transparent; color:#a8ceff; font:500 13px -apple-system,BlinkMacSystemFont,sans-serif; cursor:pointer; }
+.elrc-popover button:focus-visible, .elrc-popover a:focus-visible, .elrc-popover select:focus-visible { outline:2px solid #8dbdff; outline-offset:2px; }
+html.elrc-light .elrc-popover { background:#fff; color:#24354a; border-color:#dce3ee; box-shadow:0 12px 36px #24354a24; }
+html.elrc-light .elrc-download-camera:hover { background:#f5f8fc; }
+html.elrc-light .elrc-download-unavailable, html.elrc-light .elrc-download-empty, html.elrc-light .elrc-focus-status { color:#52647b; }
+html.elrc-light .elrc-mode-choices { background:#edf2f8; }
+html.elrc-light .elrc-mode-choices button { color:#52647b; }
+html.elrc-light .elrc-mode-choices button[aria-pressed="true"] { background:#fff; color:#155da8; box-shadow:0 1px 4px #24354a25; }
+html.elrc-light .elrc-focus-fields select { background:#f5f8fc; border-color:#d1dce9; color-scheme:light; }
+html.elrc-light .elrc-focus-swap { border-color:#d1dce9; color:#155da8; }
+html.elrc-wide .elrc-mode-active { border-color:#8dbdff !important; }
+/* Reuse the site's synchronized players in a full-width main view and a floating view. */
+html.elrc-focus-mode .player_box:not(:fullscreen):has(.player_group) { padding-top:0 !important; height:var(--elrc-focus-height,56.25vw) !important; width:var(--elrc-focus-width,100%) !important; max-width:100% !important; margin-inline:auto !important; aspect-ratio:auto; }
+html.elrc-focus-mode .player_group { display:block !important; position:absolute !important; inset:0 !important; width:100% !important; height:100% !important; }
+html.elrc-focus-mode .player_group > .player_item { display:none !important; }
+html.elrc-focus-mode .player_group > .player_item.elrc-focus-main,
+html.elrc-focus-mode .player_group > .player_item.elrc-focus-float { display:block !important; position:absolute !important; width:100% !important; height:100% !important; inset:0 !important; margin:0 !important; padding:0 !important; transform:none !important; }
+html.elrc-focus-mode .player_group > .player_item.elrc-focus-main { z-index:1 !important; }
+html.elrc-focus-mode .player_group > .player_item.elrc-focus-float { z-index:10 !important; inset:auto !important; left:var(--elrc-float-left,16px) !important; top:var(--elrc-float-top,16px) !important; width:var(--elrc-float-width,25%) !important; max-width:calc(100% - 24px) !important; height:auto !important; aspect-ratio:16 / 9; border:1px solid #ffffff70; border-radius:var(--elrc-radius-card,12px); box-sizing:border-box; overflow:hidden; box-shadow:0 8px 28px #0006; }
+html.elrc-focus-mode .player_group .video_container { position:absolute !important; inset:0 !important; width:100% !important; height:100% !important; padding:0 !important; max-width:none !important; }
+html.elrc-focus-mode .player_group video { width:100% !important; height:100% !important; object-fit:contain !important; }
+html.elrc-focus-mode .player_group .item_tool_bar { display:none !important; }
+.elrc-float-handle { position:absolute; z-index:25; inset:0 0 auto; display:flex; align-items:center; justify-content:space-between; gap:8px; min-height:32px; box-sizing:border-box; padding:4px 8px; background:#111c2cc9; color:#fff; font:11px/1.4 -apple-system,BlinkMacSystemFont,sans-serif; cursor:grab; touch-action:none; user-select:none; }
+.elrc-float-handle.elrc-dragging { cursor:grabbing; }
+.elrc-float-handle:focus-visible { outline:2px solid #8dbdff; outline-offset:-2px; }
+.elrc-float-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.elrc-float-handle button { flex:none; border:0; border-radius:6px; padding:3px 6px; background:#ffffff26; color:#fff; font:inherit; cursor:pointer; }
+
+/* The bottom camera menu shares the same main/floating selections. */
+.elrc-focus-native-menu { display:none; }
+html.elrc-focus-mode .tool_bar .frame .modal:has(.elrc-focus-native-menu) > :not(.elrc-focus-native-menu) { display:none !important; }
+html.elrc-focus-mode .tool_bar .frame .modal:has(.elrc-focus-native-menu) {
+  width:288px !important;
+  min-width:0 !important;
+  max-width:calc(100vw - 32px) !important;
+  padding:12px !important;
+  box-sizing:border-box !important;
+}
+html.elrc-focus-mode .tool_bar .frame .modal .elrc-focus-native-menu {
+  display:grid;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:none !important;
+  box-sizing:border-box;
+  padding:0 !important;
+  gap:12px;
+  color:var(--elrc-menu-text) !important;
+  font:13px/1.5 -apple-system,BlinkMacSystemFont,sans-serif;
+}
+html.elrc-focus-mode .tool_bar .frame .modal .elrc-focus-native-menu label {
+  display:grid !important;
+  grid-template-columns:48px minmax(0,1fr);
+  gap:12px;
+  align-items:center;
+  width:100% !important;
+  min-width:0;
+  margin:0 !important;
+  padding:0 !important;
+  box-sizing:border-box;
+  color:var(--elrc-menu-text) !important;
+  white-space:normal;
+  font:inherit;
+}
+html.elrc-focus-mode .tool_bar .frame .modal .elrc-focus-native-menu select {
+  display:block;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  box-sizing:border-box !important;
+  padding:7px 8px;
+  border:1px solid var(--elrc-menu-border) !important;
+  background:var(--elrc-menu-control) !important;
+  color:var(--elrc-menu-text) !important;
+  color-scheme:var(--elrc-menu-scheme);
+  font:inherit;
+}
+html.elrc-focus-mode .elrc-focus-float, html.elrc-focus-mode .elrc-focus-float video { cursor:grab !important; touch-action:none !important; }
+html.elrc-focus-mode .elrc-focus-float:has(.elrc-dragging), html.elrc-focus-mode .elrc-focus-float:has(.elrc-dragging) video { cursor:grabbing !important; }
+
+/* Reveal the university navigation at the top edge without taking player space. */
+html.elrc-autohide-header #main { padding-top:0 !important; }
+html.elrc-autohide-header .review_student { height:100dvh !important; }
+html.elrc-autohide-header .tabs_view_9_vision_1 { transform:translateY(-100%); transition:transform .16s ease; pointer-events:none; z-index:1100 !important; }
+html.elrc-autohide-header.elrc-header-visible .tabs_view_9_vision_1,
+html.elrc-autohide-header .tabs_view_9_vision_1:focus-within { transform:translateY(0); pointer-events:auto; }
+.elrc-header-reveal { position:fixed; z-index:1101; top:0; left:0; width:100%; height:10px; padding:0; border:0; background:transparent; cursor:pointer; }
+.elrc-header-reveal span { display:block; width:40px; height:3px; border-radius:3px; margin:0 auto; background:#70859c60; }
+.elrc-header-reveal:focus-visible { outline:2px solid #007aff; outline-offset:-2px; }
+html:has(:fullscreen) .elrc-header-reveal { display:none; }
+.elrc-float-resize { position:absolute; z-index:35; width:18px; height:18px; padding:0; border:0; background:transparent; touch-action:none; }
+.elrc-float-resize::after { content:''; position:absolute; inset:4px; border-color:#fff; border-style:solid; border-width:0; opacity:0; filter:drop-shadow(0 1px 2px #000); }
+.elrc-focus-float:hover .elrc-float-resize::after, .elrc-float-resize:focus-visible::after { opacity:1; }
+.elrc-resize-nw { top:0; left:0; cursor:nwse-resize; }
+.elrc-resize-ne { top:0; right:0; cursor:nesw-resize; }
+.elrc-resize-sw { bottom:0; left:0; cursor:nesw-resize; }
+.elrc-resize-se { bottom:0; right:0; cursor:nwse-resize; }
+.elrc-resize-nw::after { border-top-width:2px; border-left-width:2px; border-top-left-radius:4px; }
+.elrc-resize-ne::after { border-top-width:2px; border-right-width:2px; border-top-right-radius:4px; }
+.elrc-resize-sw::after { border-bottom-width:2px; border-left-width:2px; border-bottom-left-radius:4px; }
+.elrc-resize-se::after { border-bottom-width:2px; border-right-width:2px; border-bottom-right-radius:4px; }
+@media(prefers-reduced-motion:reduce) { html.elrc-autohide-header .tabs_view_9_vision_1 { transition:none; } }
+
+.elrc-fixed-width-field[hidden] { display:none !important; }
+.elrc-fixed-width-field input { box-sizing:border-box; width:100%; min-width:0; padding:7px 8px; border:1px solid #43546b; border-radius:8px; background:#253247; color:inherit; font:inherit; }
+html.elrc-light .elrc-fixed-width-field input { background:#f5f8fc; border-color:#d1dce9; }
+/* Compact timeline ticks keep dense course markers clear of the seek handle. */
+html.elrc-wide .tool_bar .progress .point_mark_item { width:6px !important; height:12px !important; transform:translate(-50%,-50%) !important; display:flex; align-items:center; justify-content:center; }
+html.elrc-wide .tool_bar .progress .point_mark_dot { width:2px !important; height:6px !important; border-radius:1px !important; background:#c1d3e9 !important; opacity:.8; }
+html.elrc-wide .tool_bar .progress .point_mark_item:hover { z-index:5; }
+html.elrc-wide .tool_bar .progress .point_mark_item:hover .point_mark_dot { background:#fff !important; height:10px !important; opacity:1; }
+
+/* A single chronological lesson list in a left-side drawer. */
+html.elrc-wide.elrc-open-menu .menu_drawer { position:fixed !important; inset:0 !important; display:block !important; width:100vw !important; height:100dvh !important; overflow:visible !important; border:0 !important; border-radius:0 !important; z-index:1200 !important; pointer-events:none; background:transparent !important; box-shadow:none !important; }
+html.elrc-wide.elrc-open-menu .menu_drawer .mask { display:block !important; position:absolute !important; inset:0 !important; width:100% !important; height:100% !important; background:#111c2c40 !important; pointer-events:auto; }
+html.elrc-wide.elrc-open-menu .menu_drawer_body { position:absolute !important; inset:0 auto 0 0 !important; display:flex !important; flex-direction:column !important; width:min(400px,calc(100vw - 32px)) !important; max-width:400px !important; height:100dvh !important; padding:0 !important; overflow:hidden !important; border-radius:0 16px 16px 0 !important; pointer-events:auto; box-sizing:border-box; box-shadow:12px 0 40px #111c2c30 !important; }
+.elrc-directory { flex:1; height:100%; min-height:0; }
+.elrc-directory-head { align-items:center; padding:20px 24px; flex:none; }
+.elrc-directory .elrc-week-list { display:flex; flex-direction:column; gap:0; flex:1; min-height:0; overflow:auto; padding:12px 16px 24px; }
+.elrc-directory .elrc-week { flex:none; }
+.elrc-directory .elrc-week summary { gap:8px; padding:8px 10px; }
+.elrc-directory .elrc-week-main { display:grid; grid-template-columns:1fr; gap:3px; }
+.elrc-directory .elrc-week-main strong { font-size:14px; }
+.elrc-directory .elrc-week-dates { font-size:11px; }
+.elrc-directory .elrc-lessons { padding:10px 0 12px; }
+.elrc-directory .elrc-lesson { grid-template-columns:12px minmax(0,1fr) auto; padding:10px; gap:8px; }
+.elrc-directory .elrc-playing-badge { grid-column:2 / -1; justify-self:start; }
+.elrc-popover-action { display:block; width:100%; padding:12px; border:0; border-radius:10px; text-align:left; background:transparent; color:inherit; font:500 13px/1.4 -apple-system,BlinkMacSystemFont,sans-serif; cursor:pointer; }
+.elrc-popover-action:hover { background:#344b64; }
+html.elrc-light .elrc-popover-action:hover { background:#edf4fc; }
+#elrc-transcript-menu { width:min(200px,calc(100vw - 48px)); }
+.elrc-directory { width:100%; box-sizing:border-box; }
+.elrc-directory .elrc-week-list { align-items:stretch; }
+.elrc-directory .elrc-week { width:100%; box-sizing:border-box; }
